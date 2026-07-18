@@ -1,1 +1,8 @@
-from models import Category, Ingredient, Recipe, Food
+from app import app
+
+if __name__ == '__main__':
+    print("=========================================")
+    print(" เริ่มต้นระบบสั่งอาหารรสไทย (Thai Kitchen) ")
+    print(" เปิดหน้าเว็บบราวเซอร์ที่: http://127.0.0.1:5000 ")
+    print("=========================================")
+    app.run(debug=True, port=5000)

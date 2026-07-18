@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thai Cuisine - ระบบสั่งอาหารและสูตรอาหาร</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom Style Sheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- App Container -->
+    <div class="app-container">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo-area">
+                <i class="fa-solid fa-utensils logo-icon"></i>
+                <div class="logo-text">
+                    <h2>รสไทย</h2>
+                    <span>Thai Kitchen OOP</span>
+                </div>
+            </div>
+            
+            <nav class="nav-menu">
+                <button class="nav-item active" data-tab="all">
+                    <i class="fa-solid fa-border-all"></i> เมนูทั้งหมด
+                </button>
+                <button class="nav-item" data-tab="ข้าวจานเดียว">
+                    <i class="fa-solid fa-bowl-rice"></i> ข้าวจานเดียว
+                </button>
+                <button class="nav-item" data-tab="ก๋วยเตี๋ยว">
+                    <i class="fa-solid fa-droplet"></i> เมนูเส้น / ก๋วยเตี๋ยว
+                </button>
+                <button class="nav-item" data-tab="แกง/ซุป">
+                    <i class="fa-solid fa-mug-hot"></i> แกง / ซุป
+                </button>
+                <button class="nav-item" data-tab="popular">
+                    <i class="fa-solid fa-fire-flame-curved"></i> เมนูยอดฮิต
+                </button>
+                <button class="nav-item" data-tab="history">
+                    <i class="fa-solid fa-receipt"></i> ประวัติการสั่งซื้อ
+                </button>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <p>&copy; 2026 รสไทย Delivery</p>
+                <small>Python OOP + HTML/CSS</small>
+            </div>
+        </aside>
+        
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Header Search Bar -->
+            <header class="main-header">
+                <div class="header-title">
+                    <h1 id="page-title">เมนูทั้งหมด</h1>
+                    <p class="subtitle">คัดสรรวัตถุดิบและสูตรอาหารไทยแท้ดั้งเดิม</p>
+                </div>
+                
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <input type="text" id="search-input" placeholder="ค้นหาเมนูอาหาร หรือวัตถุดิบ...">
+                </div>
+                
+                <div class="cart-trigger" id="cart-btn">
+                    <i class="fa-solid fa-basket-shopping"></i>
+                    <span class="cart-badge" id="cart-count">0</span>
+                </div>
+            </header>
+            
+            <!-- Hero Banner Section -->
+            <section class="hero-banner" id="hero-sec">
+                <div class="hero-content">
+                    <span class="tag">สูตรอาหาร 100 เมนู</span>
+                    <h2>อร่อยตำรับไทย ด้วยวัตถุดิบชั้นเลิศ</h2>
+                    <p>ค้นหาสูตรอาหารโดยละเอียด ตรวจสอบปริมาณวัตถุดิบ สั่งอาหารและชำระเงินจำลองได้ทันทีผ่านระบบเว็บแอปพลิเคชัน</p>
+                    <button class="btn btn-primary" onclick="scrollToMenu()">ดูเมนูวันนี้</button>
+                </div>
+                <div class="hero-image">
+                    <!-- Elegant Abstract Overlay Cards -->
+                    <div class="stat-card pop-item">
+                        <i class="fa-solid fa-crown text-yellow"></i>
+                        <div>
+                            <h4>ข้าวกะเพราหมูกรอบ</h4>
+                            <small>ยอดฮิตอันดับ 1</small>
+                        </div>
+                    </div>
+                    <div class="stat-card rate-item">
+                        <i class="fa-solid fa-heart text-red"></i>
+                        <div>
+                            <h4>วัตถุดิบสดใหม่</h4>
+                            <small>คำนวณสูตรแม่นยำ</small>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Food Menus Content -->
+            <section class="menu-section" id="menu-section-anchor">
+                <div class="filter-bar">
+                    <div class="filter-title">
+                        <h3 id="current-category-label">เมนูแนะนำ</h3>
+                        <span id="items-found-label">พบ 100 รายการ</span>
+                    </div>
+                </div>
+                
+                <!-- Food Menu Grid -->
+                <div class="menu-grid" id="menu-grid">
+                    <!-- Cards will be populated dynamically via JavaScript -->
+                    <div class="loader-container">
+                        <div class="spinner"></div>
+                        <p>กำลังโหลดเมนูอาหารสุดอร่อย...</p>
+                    </div>
+                </div>
+                
+                <!-- History Container -->
+                <div class="history-container hidden" id="history-container">
+                    <div class="history-header">
+                        <h3>ประวัติการทำรายการ</h3>
+                        <p>รวมข้อมูลประวัติการสั่งซื้อและสถานะชำระเงิน</p>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="history-table">
+                            <thead>
+                                <tr>
+                                    <th>หมายเลขสั่งซื้อ</th>
+                                    <th>วันที่ทำรายการ</th>
+                                    <th>รายการอาหาร</th>
+                                    <th>ช่องทางชำระเงิน</th>
+                                    <th>ยอดรวม</th>
+                                    <th>สถานะ</th>
+                                    <th>การจัดการ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="history-table-body">
+                                <!-- Table rows will be populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <!-- Cart Sidebar Panel -->
+        <aside class="cart-sidebar" id="cart-sidebar">
+            <div class="cart-header">
+                <h3>ตะกร้าสินค้า</h3>
+                <button class="close-btn" id="close-cart-btn"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="cart-content" id="cart-items-container">
+                <!-- Cart items will be loaded dynamically -->
+                <div class="empty-cart">
+                    <i class="fa-solid fa-basket-shopping"></i>
+                    <p>ยังไม่มีสินค้าในตะกร้า</p>
+                    <span>เลือกอาหารจานโปรดของคุณเพื่อเริ่มสั่งซื้อ</span>
+                </div>
+            </div>
+            
+            <div class="cart-footer">
+                <div class="cart-summary">
+                    <div class="summary-line">
+                        <span>จำนวนสินค้า</span>
+                        <span id="summary-items-count">0 จาน</span>
+                    </div>
+                    <div class="summary-line total">
+                        <span>ยอดรวมสุทธิ</span>
+                        <span id="summary-total-price">0.00 บาท</span>
+                    </div>
+                </div>
+                
+                <div class="payment-method-selector">
+                    <label>วิธีการชำระเงิน</label>
+                    <div class="payment-methods">
+                        <label class="method-option active">
+                            <input type="radio" name="payment_method" value="PromptPay" checked>
+                            <i class="fa-solid fa-qrcode"></i> PromptPay
+                        </label>
+                        <label class="method-option">
+                            <input type="radio" name="payment_method" value="Credit Card">
+                            <i class="fa-solid fa-credit-card"></i> บัตรเครดิต
+                        </label>
+                        <label class="method-option">
+                            <input type="radio" name="payment_method" value="Cash">
+                            <i class="fa-solid fa-money-bill-wave"></i> เงินสด
+                        </label>
+                    </div>
+                </div>
+                
+                <button class="btn btn-block btn-checkout" id="checkout-submit-btn" disabled>
+                    <i class="fa-solid fa-wallet"></i> ดำเนินการชำระเงิน
+                </button>
+            </div>
+        </aside>
+    </div>
+    
+    <!-- Recipe Detail Modal Dialog -->
+    <div class="modal" id="recipe-modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">
+                        <span class="category-badge" id="modal-category">ข้าวจานเดียว</span>
+                        <h2 id="modal-title">สูตรกะเพราแห้งหมูกรอบ</h2>
+                    </div>
+                    <button class="close-btn modal-close-trigger"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                
+                <div class="modal-body">
+                    <div class="recipe-layout">
+                        <div class="recipe-info">
+                            <div class="recipe-visual">
+                                <i class="fa-solid fa-bowl-food large-food-icon"></i>
+                                <span class="price-tag" id="modal-price">65 บาท</span>
+                            </div>
+                            <div class="recipe-meta-stats">
+                                <div class="stat-box">
+                                    <i class="fa-solid fa-fire text-orange"></i>
+                                    <div>
+                                        <span id="modal-pop-count">12 ครั้ง</span>
+                                        <small>จำนวนการสั่ง</small>
+                                    </div>
+                                </div>
+                                <div class="stat-box">
+                                    <i class="fa-solid fa-scale-balanced text-green"></i>
+                                    <div>
+                                        <span id="modal-ingredient-count">9 ชนิด</span>
+                                        <small>วัตถุดิบที่ใช้</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="recipe-details">
+                            <h3><i class="fa-solid fa-list-check"></i> รายการวัตถุดิบและสัดส่วน</h3>
+                            <div class="recipe-ingredients-list" id="modal-recipe-list">
+                                <!-- Populate via JS -->
+                            </div>
+                            
+                            <div class="recipe-hint">
+                                <i class="fa-solid fa-lightbulb text-yellow"></i>
+                                <span><strong>คำแนะนำพิเศษ:</strong> สัดส่วนวัตถุดิบนี้ปรับคำนวณโดยละเอียดตามหลักสูตรโภชนาการสำหรับ 1 จานใหญ่</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button class="btn btn-secondary modal-close-trigger">ปิดหน้าต่าง</button>
+                    <button class="btn btn-primary" id="modal-add-to-cart-btn"><i class="fa-solid fa-cart-plus"></i> เพิ่มเมนูนี้ลงตะกร้า</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Payment Simulation Modal -->
+    <div class="modal" id="payment-modal">
+        <div class="modal-dialog small">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2><i class="fa-solid fa-shield-halved text-green"></i> ชำระเงินจำลอง</h2>
+                    <button class="close-btn" id="payment-close-btn"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div class="modal-body text-center">
+                    
+                    <!-- PromptPay View -->
+                    <div id="payment-view-promptpay" class="payment-view text-center">
+                        <div class="promptpay-logo">
+                            <span class="p-color">Prompt</span><span class="pay-color">Pay</span>
+                        </div>
+                        <p class="payment-hint">สแกน QR Code ด้านล่างเพื่อชำระเงินจำลอง</p>
+                        
+                        <div class="qr-code-wrapper">
+                            <!-- Canvas or Mock QR Generated in CSS -->
+                            <div class="mock-qr-code">
+                                <div class="qr-corner top-left"></div>
+                                <div class="qr-corner top-right"></div>
+                                <div class="qr-corner bottom-left"></div>
+                                <div class="qr-center-logo">
+                                    <i class="fa-solid fa-wallet"></i>
+                                </div>
+                                <div class="qr-dots-bg"></div>
+                            </div>
+                            <div class="qr-scanner-line"></div>
+                        </div>
+                        
+                        <div class="payment-info-box">
+                            <small>ยอดชำระเงินที่ต้องการ</small>
+                            <h2 class="amount-text" id="pp-amount">130.00 บาท</h2>
+                            <small class="text-muted">เลขที่อ้างอิง: <span id="pp-ref">ORD-0000</span></small>
+                        </div>
+                        
+                        <div class="timer-countdown">
+                            <i class="fa-regular fa-clock"></i> กรุณาชำระเงินภายใน <span id="payment-timer">02:00</span> นาที
+                        </div>
+                    </div>
+                    
+                    <!-- Credit Card View -->
+                    <div id="payment-view-card" class="payment-view hidden">
+                        <p class="payment-hint">กรอกข้อมูลบัตรเครดิตจำลองเพื่อความปลอดภัย</p>
+                        
+                        <div class="credit-card-preview">
+                            <div class="card-chip"></div>
+                            <div class="card-number">•••• •••• •••• ••••</div>
+                            <div class="card-details">
+                                <div class="card-holder">
+                                    <small>CARDHOLDER</small>
+                                    <div>YOUR NAME</div>
+                                </div>
+                                <div class="card-expiry">
+                                    <small>EXPIRES</small>
+                                    <div>MM/YY</div>
+                                </div>
+                            </div>
+                            <div class="card-type-icon">
+                                <i class="fa-brands fa-cc-visa"></i>
+                            </div>
+                        </div>
+                        
+                        <form id="credit-card-form" class="card-form">
+                            <div class="form-group">
+                                <label>เลขหน้าบัตร</label>
+                                <input type="text" id="cc-num" placeholder="4111 2222 3333 4444" maxlength="19" required>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group half">
+                                    <label>วันหมดอายุ</label>
+                                    <input type="text" id="cc-exp" placeholder="MM/YY" maxlength="5" required>
+                                </div>
+                                <div class="form-group half">
+                                    <label>CVV</label>
+                                    <input type="password" id="cc-cvv" placeholder="•••" maxlength="3" required>
+                                </div>
+                            </div>
+                        </form>
+                        
+                        <div class="payment-info-box">
+                            <small>ยอดชำระเงินที่ต้องการ</small>
+                            <h2 class="amount-text" id="card-amount">130.00 บาท</h2>
+                        </div>
+                    </div>
+                    
+                    <!-- Cash View -->
+                    <div id="payment-view-cash" class="payment-view hidden">
+                        <div class="cash-illustration">
+                            <i class="fa-solid fa-hand-holding-dollar cash-icon"></i>
+                        </div>
+                        <p class="payment-hint">ชำระด้วยเงินสดเมื่อได้รับอาหารที่เคาน์เตอร์</p>
+                        
+                        <div class="payment-info-box">
+                            <small>ยอดรวมที่ต้องชำระทั้งหมด</small>
+                            <h2 class="amount-text" id="cash-amount">130.00 บาท</h2>
+                            <p class="text-green text-bold"><i class="fa-solid fa-circle-check"></i> ไม่จำเป็นต้องแชร์หลักฐานสแกน</p>
+                        </div>
+                    </div>
+                    
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" id="payment-cancel-btn">ยกเลิกรายการ</button>
+                    <button class="btn btn-primary" id="payment-confirm-btn">
+                        <i class="fa-solid fa-circle-check"></i> ยืนยันการชำระเงิน
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Custom Scripts -->
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
